@@ -17,9 +17,6 @@ class ICM(nn.Module):
         self.alpha = alpha
         self.mse_loss = nn.MSELoss()
         self.cross_entropy = nn.CrossEntropyLoss()
-        self.reward_min = 1e10
-        self.reward_max = -1e10
-
     def set_device(self,device):
         self.device = device
         self.to(device)
@@ -38,7 +35,7 @@ class ICM(nn.Module):
         return self.inverse_model(s,s_)
 
     def forward(self,states,next_states,a):
-        a = torch.LongTensor([a])
+        a = torch.LongTensor(a)
         a_one_hot = F.one_hot(Variable(a).to(self.device),self.action_nums)
         feature_s = self.get_feature(states)
         feature_s_ = self.get_feature(next_states)
@@ -48,11 +45,9 @@ class ICM(nn.Module):
         forward_loss = self.alpha*self.mse_loss(feature_s_,pred_s_)
         inverse_loss = self.cross_entropy(pred_a,a)
 
-        intrinsic_r  = forward_loss
+        intrinsic_r  = torch.mean(torch.abs(feature_s_ - pred_s_)**2)
 
-        self.reward_max = max(self.reward_max,intrinsic_r)
-        self.reward_min = min(self.reward_min,intrinsic_r)
-        intrinsic_r = intrinsic_r -self.reward_min/(self.reward_max - self.reward_min+1e-8)
+        intrinsic_r = intrinsic_r -self.intrinsic_reward.min()/(self.intrinsic_reward.max() - self.intrinsic_reward.min()+1e-8)
         loss = (1-self.beta)*inverse_loss+self.beta*forward_loss
         return intrinsic_r ,loss, forward_loss,inverse_loss
 
