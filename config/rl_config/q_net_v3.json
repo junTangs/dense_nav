@@ -1,0 +1,50 @@
+{
+  "type": "q_net_v3",
+  "state_dim": 13,
+  "action_dim": 21,
+
+  "feature": {
+    "type": "mlpfe",
+    "mlp_layer":
+    {
+        "in_channel":39,
+        "layers":[64,64],
+        "out_channel":128,
+        "activation": "relu",
+        "out_activation": "none"
+    }
+  },
+  "v_a":{
+    "type": "v1n",
+
+    "encoder": {
+        "in_channel":128,
+        "layers":[63],
+        "out_channel":32,
+        "activation": "relu",
+        "out_activation": "none"
+    },
+
+
+    "a_layer":
+    {
+        "in_channel":32,
+        "layers":[64,32],
+        "out_channel":21,
+        "activation": "relu",
+        "out_activation": "none"
+    },
+
+    "v_layer":
+    {
+        "in_channel":32,
+        "layers":[16,8],
+        "out_channel":1,
+        "activation": "relu",
+        "out_activation": "none"
+    }
+
+  }
+
+
+}

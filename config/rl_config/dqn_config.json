@@ -1,0 +1,14 @@
+{
+    "rl":"per_dqn",
+    "replay_buffer": {
+        "capacity": 8000,
+        "batch_size": 32
+    },
+    "action_num": 21,
+
+    "e":0.1,
+    "lr":0.001,
+    "gamma":0.95,
+    "update_freq":250,
+    "use_gpu":true
+}
