@@ -6,13 +6,14 @@ from rl import QNet,rl_type
 from colorama import Fore, Back, Style
 import colorama
 import os
+import shutil
 import datetime
 from torch.utils.tensorboard import SummaryWriter
+import copy
 
 # args
 EXPERT = "s12_a21_apf_0s_20h_v1"
 CONFIG_PATH = r'config/env_config/env.json'
-NET_PATH = r'config/rl_config/q_net_v1.json'
 RL_PATH = r'config/rl_config/dqn_config.json'
 SAVE_DIR = "model"
 LOG_DIR = "log"
@@ -20,18 +21,44 @@ EPISODE = int(1e4)
 
 colorama.init(autoreset=True)
 today =  datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_')
-save_dir = os.path.join(SAVE_DIR,today+EXPERT)
-if not os.path.exists(save_dir):
-    os.mkdir(save_dir)
-
-log_dir = os.path.join(LOG_DIR,today+EXPERT)
-if not os.path.exists(log_dir):
-    os.mkdir(log_dir)
 
 # load config
 config = json.load(open(CONFIG_PATH))
-net_config = json.load(open(NET_PATH))
 rl_config = json.load(open(RL_PATH))
+
+# mkdir and save config
+save_dir = os.path.join(SAVE_DIR,today+EXPERT)
+save_config_dir = os.path.join(save_dir,"config")
+save_env_config_dir = os.path.join(save_config_dir,"env_config")
+save_rl_config_dir = os.path.join(save_config_dir,"rl_config")
+save_config = copy.deepcopy(config)
+save_rl_config = copy.deepcopy(rl_config)
+
+save_config["robot_config_path"] = os.path.join(save_env_config_dir,os.path.basename(config["robot_config_path"]))
+save_config["human_config_path"] = os.path.join(save_env_config_dir,os.path.basename(config["human_config_path"]))
+save_config["obstacle_config_path"] = os.path.join(save_env_config_dir,os.path.basename(config["obstacle_config_path"]))
+save_config["goal_config_path"] = os.path.join(save_env_config_dir,os.path.basename(config["goal_config_path"]))
+
+save_rl_config["net_config_path"] = os.path.join(save_rl_config_dir,os.path.basename(rl_config["net_config_path"]))
+if not os.path.exists(save_dir):
+    os.mkdir(save_dir)
+    os.mkdir(save_config_dir)
+    os.mkdir(save_env_config_dir)
+    os.mkdir(save_rl_config_dir)
+    
+    json.dump(save_config,open(os.path.join(save_env_config_dir,"env.json"),"w"))
+    shutil.copy(config["robot_config_path"],save_env_config_dir)
+    shutil.copy(config["human_config_path"],save_env_config_dir)
+    shutil.copy(config["obstacle_config_path"],save_env_config_dir)
+    shutil.copy(config["goal_config_path"],save_env_config_dir)
+    
+    json.dump(save_rl_config,open(os.path.join(save_rl_config_dir,"rl.json"),"w"))
+    shutil.copy(rl_config["net_config_path"],save_rl_config_dir)
+
+# mkdir and save log
+log_dir = os.path.join(LOG_DIR,today+EXPERT)
+if not os.path.exists(log_dir):
+    os.mkdir(log_dir)
 
 # log
 writer = SummaryWriter(log_dir=log_dir)
@@ -40,10 +67,7 @@ writer = SummaryWriter(log_dir=log_dir)
 env = gym.make("nav_env-v0",config = config)
 
 # reinforcement learning
-net = QNet(net_config)
-net2 = QNet(net_config)
 rl = rl_type[rl_config["rl"]](rl_config)
-rl.configure(target_net = net,eval_net = net2)
 
 
 reach_counter = 0
@@ -51,7 +75,7 @@ for i_episode in range(EPISODE):
     s = env.reset()
 
     if i_episode%500 == 0 and i_episode != 0:
-        dir = os.path.join(save_dir,f"{i_episode}_ckpt")
+        dir = os.path.join(save_dir,f"{i_episode}_ckpt_{reach_counter}")
         os.mkdir(dir)
         rl.save(dir)
 

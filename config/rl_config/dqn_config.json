@@ -4,11 +4,15 @@
         "capacity": 8000,
         "batch_size": 32
     },
-    "action_num": 21,
-
+    "action_dims": 21,
+    "state_dims":13,
+    "feature_dims":32,
     "e":0.1,
     "lr":0.001,
     "gamma":0.95,
     "update_freq":250,
-    "use_gpu":true
+    "use_gpu":true,
+    "use_intrinsic":false,
+    "use_td_clip":false,
+    "net_config_path":"./config/q_net_v1_config.json"
 }

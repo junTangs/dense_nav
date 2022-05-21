@@ -1,9 +1,13 @@
 
+from re import S
+
+from sympy import im
 from ..common.priority_relpay_buffer import ReplayBuffer
 from ..common.rl_interface import RLInterface
 from ..common.e_greedy import e_greedy
-from rl.common.icm import ICM
-
+from rl.common.icm import ICM,ForwardModel,InverseModel
+from rl import QNet
+import copy
 from torch.autograd import Variable
 from torch.optim import Adam
 import torch.nn as nn
@@ -12,7 +16,8 @@ import torch
 import numpy as np
 from rl.common.soft_update import soft_update
 import itertools
-
+import json
+import os
 class PER_DQN(RLInterface):
     def __init__(self,config) -> None:
         super().__init__()
@@ -37,6 +42,7 @@ class PER_DQN(RLInterface):
         self.is_configured = False
         self.use_gpu = config["use_gpu"]
         self.use_intrinsic = config["use_intrinsic"]
+        self.use_td_clip = config["use_td_clip"]
         
         if self.use_gpu:
             self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -49,6 +55,22 @@ class PER_DQN(RLInterface):
 
         # icm
         self.icm = None
+        
+        self.net_config = json.load(open(config["net_config_path"]))
+        
+        self.target_net = QNet(self.net_config)
+        self.eval_net = QNet(self.net_config)
+
+        if self.use_intrinsic:
+            feature_extractor = self.net_config["feature_extractor"]
+            self.icm = ICM(feature_extractor,self.config["feature_dims"],self.config["action_dims"])
+            self.optimizer = Adam(itertools.chain(self.eval_net.parameters(), self.icm.parameters()), lr=self.lr)
+        else:
+            self.optimizer = Adam(self.eval_net.parameters(), lr=self.lr)
+
+        self.target_net.set_device(self.device)
+        self.eval_net.set_device(self.device)
+
             
             
     
@@ -57,11 +79,8 @@ class PER_DQN(RLInterface):
         self.eval_net = kwargs["eval_net"]
 
         if self.use_intrinsic:
-            feature_extractor = kwargs["feature_extractor"]
-            forward_model = kwargs["forward_model"]
-            inverse_model = kwargs["forward_model"]
-            action_num = kwargs["action_num"]
-            self.icm = ICM(feature_extractor,forward_model,inverse_model,action_num)
+            feature_extractor = copy.deepcopy(QNet.feature_extractor)
+            self.icm = ICM(feature_extractor,)
             self.optimizer = Adam(itertools.chain(self.eval_net.parameters(), self.icm.parameters()), lr=self.lr)
         else:
             self.optimizer = Adam(self.eval_net.parameters(), lr=self.lr)
@@ -125,7 +144,11 @@ class PER_DQN(RLInterface):
         # Q(s,a): [b,1]
         q_s_a = q_s.gather(1,a)
 
-
+        if self.use_intrinsic:
+            intrinsic_r,total_loss,_,_ = self.icm(s,s_,a)
+            r = r + intrinsic_r
+        
+        
         
         
         # a' : [b,1]
@@ -138,9 +161,12 @@ class PER_DQN(RLInterface):
 
         # [b,1]
         td_errors = abs(y - q_s_a)
+        
+        td_errors = torch.clamp(td_errors,0,1) if self.use_td_clip else td_errors
 
         loss = torch.mean(ISWeight*(td_errors)**2)
 
+        loss += total_loss if self.use_intrinsic else 0
         
         # backward
         self.optimizer.zero_grad()
@@ -155,12 +181,20 @@ class PER_DQN(RLInterface):
     def save(self, save_dir):
         torch.save(self.eval_net.state_dict(), save_dir+"/eval_net.pth")
         torch.save(self.target_net.state_dict(), save_dir+"/target_net.pth")
+        self.memory.save(save_dir+"/memory.pkl")
         return
     
     def load(self, model_dir):
         self.eval_net.load_state_dict(torch.load(model_dir+"/eval_net.pth"))
         self.target_net.load_state_dict(torch.load(model_dir+"/target_net.pth"))
+        
+        if os.path.exists(model_dir+"/memory.pkl"):
+            self.memory.load(model_dir+"/memory.pkl")
         return
+    
+    def load_memory(self,memory_path):
+        self.memory.load(memory_path)
+        return 
 
     def train(self):
         self.e = self.config["e"]

@@ -1,8 +1,7 @@
 import numpy as np
-from collections import deque,namedtuple
-import random
-
-
+from collections import namedtuple
+import pickle
+import os
 
 Transition = namedtuple("Transition",["s","a","r","s_","d"])
 MiniBatch = namedtuple("MiniBatch",["s","a","r","s_","d"])
@@ -137,15 +136,25 @@ class ReplayBuffer:
 
     def __len__(self):
         return  self.data.size
+    
+    def save(self,path):
+        pickle.dump(self, open(path, "wb"))
+        return 
+    
+    def load(self,path):
+        self.__dict__.update(pickle.load(open(path, "rb")).__dict__)
+        return 
+        
 
 
 if __name__ == "__main__":
-    config = {"capacity": 100000, "batch_size": 256}
+    config = {"capacity": 8000, "batch_size": 256}
     replay_buffer = ReplayBuffer(config)
 
-    for i in range(10000):
+    for i in range(8000):
         replay_buffer.store(np.array([1, 2, 3]), i, 2, np.array([4, 5, 6]), False)
+        
+    sample = replay_buffer.sample()
+    print(sample)
 
-    batch_index,mini_batch,ISWeight= replay_buffer.sample()
-    print(mini_batch)
-
+    
