@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 log/
-model/
+models/
 
 # Distribution / packaging
 .Python
