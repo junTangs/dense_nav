@@ -18,7 +18,7 @@ from rl.common.soft_update import soft_update
 import itertools
 import json
 import os
-class PER_DQN(RLInterface):
+class PER_DQN_ICM(RLInterface):
     def __init__(self,config) -> None:
         super().__init__()
         self.config = config 
@@ -194,6 +194,10 @@ class PER_DQN(RLInterface):
     
     def load_memory(self,memory_path):
         self.memory.load(memory_path)
+        return 
+    
+    def save_memory(self,memory_path):
+        self.memory.save(memory_path)
         return 
 
     def train(self):

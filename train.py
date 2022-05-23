@@ -10,14 +10,27 @@ import shutil
 import datetime
 from torch.utils.tensorboard import SummaryWriter
 import copy
+import argparse
+
+
+parser = argparse.ArgumentParser(description="TrainNavAgent")
+parser.add_argument("--env_config", type=str, help="env config file path")
+parser.add_argument("--rl_config", type=str, help="rl config file path")
+parser.add_argument("--save_dir", type=str,default="model",help="save dir")
+parser.add_argument("--log_dir", type=str,default="log",help="log dir")
+parser.add_argument("--episode",type= int,default=1000,help="episode")
+parser.add_argument("--name",type=str,help="experiment name")
+
+
+args = parser.parse_args()
 
 # args
-EXPERT = "s12_a21_apf_0s_20h_v1"
-CONFIG_PATH = r'config/env_config/env.json'
-RL_PATH = r'config/rl_config/dqn_config.json'
-SAVE_DIR = "model"
-LOG_DIR = "log"
-EPISODE = int(1e4)
+EXPERT = args.name
+CONFIG_PATH = args.env_config
+RL_PATH = args.rl_config
+SAVE_DIR = args.save_dir
+LOG_DIR = args.log_dir
+EPISODE = args.episode
 
 colorama.init(autoreset=True)
 today =  datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_')

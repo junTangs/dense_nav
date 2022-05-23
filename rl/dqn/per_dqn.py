@@ -118,8 +118,10 @@ class PER_DQN(RLInterface):
         # y = r + self.gamma*qt_s_a_*(1-d)
         y = r + self.gamma*qt_s_a_*(1-d)
 
-        # [b,1]
+        # [b,1] 
         td_errors = abs(y - q_s_a)
+        # clip td error 
+        td_errors = torch.clamp(td_errors,-1,1)
 
         loss = torch.mean(ISWeight*(td_errors)**2)
         
