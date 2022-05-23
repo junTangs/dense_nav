@@ -14,5 +14,5 @@
     "use_gpu":true,
     "use_intrinsic":false,
     "use_td_clip":false,
-    "net_config_path":"./config/q_net_v1_config.json"
+    "net_config_path":"./config/q_net_v2_config.json"
 }
