@@ -56,6 +56,8 @@
         },
         {"type": "human",
         "r": 2,
+        "density_map": false,
+        "out_num": 8,
         "map_width": 128,
         "map_height": 128}
     ]

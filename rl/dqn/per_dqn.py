@@ -57,7 +57,6 @@ class PER_DQN(RLInterface):
         return 
     
     def choose_action(self, state,**kwargs):
-        assert(self.is_configured), "[DQN]:DQN is not configured"
         q = self.eval_net([state])
         
         a = e_greedy(self.e,q)

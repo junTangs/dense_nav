@@ -1,12 +1,9 @@
 
-from re import S
-
-from sympy import im
 from ..common.priority_relpay_buffer import ReplayBuffer
 from ..common.rl_interface import RLInterface
 from ..common.e_greedy import e_greedy
-from rl.common.icm import ICM,ForwardModel,InverseModel
-from rl import QNet
+from rl.common.icm import ICM
+from rl.model.q_net import QNet
 import copy
 from torch.autograd import Variable
 from torch.optim import Adam
@@ -62,8 +59,10 @@ class PER_DQN_ICM(RLInterface):
         self.eval_net = QNet(self.net_config)
 
         if self.use_intrinsic:
-            feature_extractor = self.net_config["feature_extractor"]
-            self.icm = ICM(feature_extractor,self.config["feature_dims"],self.config["action_dims"])
+            feature_extractor = copy.deepcopy(self.target_net.feature_extractor)
+            feature_extractor.set_device(self.device)
+            self.icm = ICM(feature_extractor,self.config["feature_dims"],self.config["action_dims"],self.config["replay_buffer"]["batch_size"])
+            self.icm.to(self.device)
             self.optimizer = Adam(itertools.chain(self.eval_net.parameters(), self.icm.parameters()), lr=self.lr)
         else:
             self.optimizer = Adam(self.eval_net.parameters(), lr=self.lr)
@@ -71,28 +70,12 @@ class PER_DQN_ICM(RLInterface):
         self.target_net.set_device(self.device)
         self.eval_net.set_device(self.device)
 
+        if self.config["pre_trained"] is not None:
+            self.load(self.config["pre_trained"])
             
-            
-    
-    def configure(self, *args, **kwargs):
-        self.target_net = kwargs["target_net"]
-        self.eval_net = kwargs["eval_net"]
 
-        if self.use_intrinsic:
-            feature_extractor = copy.deepcopy(QNet.feature_extractor)
-            self.icm = ICM(feature_extractor,)
-            self.optimizer = Adam(itertools.chain(self.eval_net.parameters(), self.icm.parameters()), lr=self.lr)
-        else:
-            self.optimizer = Adam(self.eval_net.parameters(), lr=self.lr)
-
-        self.target_net.set_device(self.device)
-        self.eval_net.set_device(self.device)
-
-        self.is_configured = True
-        return 
     
     def choose_action(self, state,**kwargs):
-        assert(self.is_configured), "[DQN]:DQN is not configured"
         q = self.eval_net([state])
         
         a = e_greedy(self.e,q)
@@ -113,7 +96,6 @@ class PER_DQN_ICM(RLInterface):
         return 
 
     def learn(self):
-        assert(self.is_configured), "[DQN]:DQN is not configured"
 
         if(len(self.memory) <= self.config["replay_buffer"]["batch_size"]):
             return 0
@@ -144,9 +126,10 @@ class PER_DQN_ICM(RLInterface):
         # Q(s,a): [b,1]
         q_s_a = q_s.gather(1,a)
 
+        total_loss = 0
         if self.use_intrinsic:
             intrinsic_r,total_loss,_,_ = self.icm(s,s_,a)
-            r = r + intrinsic_r
+            r = r + intrinsic_r.view(-1,1)
         
         
         
@@ -161,8 +144,6 @@ class PER_DQN_ICM(RLInterface):
 
         # [b,1]
         td_errors = abs(y - q_s_a)
-        
-        td_errors = torch.clamp(td_errors,0,1) if self.use_td_clip else td_errors
 
         loss = torch.mean(ISWeight*(td_errors)**2)
 

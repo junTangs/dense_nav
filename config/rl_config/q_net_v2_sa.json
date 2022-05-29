@@ -1,38 +1,51 @@
 {
-  "type": "q_net_v2",
+  "type": "q_net_v2_sa",
   "state_dim": 13,
   "action_dim": 21,
 
   "feature": {
-    "type": "ca1df",
+    "type": "ca1df_sa",
       "sensor_dim": 8,
     "conv_layers": [
       {
-        "in_channel": 3,
-        "out_channel": 8,
+        "in_channel": 1,
+        "out_channel": 4,
         "downsample": 2
       },
       {
-        "in_channel": 8,
-        "out_channel": 16,
+        "in_channel": 4,
+        "out_channel": 8,
         "downsample": 2
       }
     ],
 
-    "mlp_layers":{
-      "in_channel":15,
-      "layers":[32],
+    "state_layers": {
+      "in_channel":5,
+      "layers":[8],
+      "out_channel":16,
+      "activation": "relu",
+      "out_activation": "none"
+
+    },
+
+    "fusion_layers":{
+      "in_channel":120,
+      "layers":[64,32],
       "out_channel":32,
       "activation": "relu",
       "out_activation": "none"
     },
 
-    "fusion_layers":{
-      "in_channel":64,
-      "layers":[32],
-      "out_channel":32,
-      "activation": "relu",
-      "out_activation": "none"
+    "sensor_sa": {
+      "in_features": 16,
+      "embed_features": 16
+
+    },
+
+    "state_sa": {
+      "in_features": 16,
+      "embed_features": 8
+
     }
   },
   "v_a":{

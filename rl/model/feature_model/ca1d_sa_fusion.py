@@ -1,15 +1,15 @@
 
 from rl.model.feature_model.feature_extractor import FeatureExtractor
-from rl.common.deep_model import BasicBlock1d,ChannelAttention,MLP
+from rl.common.deep_model import BasicBlock1d,ChannelAttention,MLP,SelfAttention
 from torch import FloatTensor
 from torch.autograd import Variable
 import torch.nn as nn
 import torch
 import numpy as np
 
-class CA1DFusion(FeatureExtractor):
+class CA1DFusionSA(FeatureExtractor):
     def __init__(self,config):
-        super(CA1DFusion, self).__init__(config)
+        super(CA1DFusionSA, self).__init__(config)
 
 
         self.convs = nn.ModuleList()
@@ -19,24 +19,45 @@ class CA1DFusion(FeatureExtractor):
             self.convs.add_module(f"base_block_{i}",BasicBlock1d(conf["in_channel"],conf["out_channel"],downsample=conf["downsample"]))
             self.atts.add_module(f"atten_{i}",ChannelAttention(att_conf))
             
-            
-        self.s_r_mlp = MLP(self.config["mlp_layers"])
+
+        self.sensor_sa_config = self.config["sensor_sa"]
+        self.state_sa_config = self.config["state_sa"]
+
+        self.state_encoder_config = self.config["state_layers"]
+        self.state_encoder = MLP(self.state_encoder_config)
+        self.sensor_sa = SelfAttention(self.sensor_sa_config["in_features"],self.sensor_sa_config["embed_features"],short_cut=True)
+        self.state_sa = SelfAttention(self.state_sa_config["in_features"],self.state_sa_config["embed_features"],short_cut=True)
+
         self.fusion_mlp = MLP(self.config["fusion_layers"])
-            
+
         self.sensor_dim = self.config["sensor_dim"]
 
+
+
     def feature(self,*args,**kwargs):
+
         x_s = args[0][0]
         # batch_size,seq_len*sensor_dim
         x_r = args[0][1]
-        x_r = x_r.view(x_r.shape[0],-1)
 
+        b,l,_ = x_r.shape
 
-        for conv,attn in zip(self.convs,self.atts):
-            x_s = conv(x_s)
-            x_s = attn(x_s)
-        x_r = self.s_r_mlp(x_r)
-        x_s = x_s.view(x_s.shape[0],-1)
+        # space feature
+        frames = []
+        for i in range(l):
+            frame = x_s[:,i,:].unsqueeze(1)
+            for conv,attn in zip(self.convs,self.atts):
+                frame = conv(frame)
+                frame = attn(frame)
+                frames.append(frame.view(b,1,-1))
+
+        x_s = torch.cat(frames,dim=1)
+
+        x_r = self.state_encoder(x_r)
+        # xs: [b,seq,dim] -> [b,seq,embed_feature]
+
+        x_s = self.sensor_sa(x_s).view(b,-1)
+        x_r = self.state_sa(x_r).view(b,-1)
         x = self.fusion_mlp(torch.cat([x_s,x_r],dim=1))
         return x
 

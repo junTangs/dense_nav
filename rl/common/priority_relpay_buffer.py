@@ -91,6 +91,9 @@ class ReplayBuffer:
         self.batch_size = config["batch_size"]
         self.data = SumTree(self.capacity)
 
+        if self.config["memory_path"] is not None:
+            self.load(self.config["memory_path"])
+
     def sample(self):
         b_idx, mini_batch, ISWeights = np.empty((self.batch_size,), dtype=np.int32), [], np.empty((self.batch_size, 1))
         pri_seg = self.data.total_p / self.batch_size  # priority segment

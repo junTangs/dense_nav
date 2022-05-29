@@ -5,6 +5,7 @@
 
   "feature": {
     "type": "ca1d",
+    "sensor_dim": 8,
     "conv_layers": [
       {
         "in_channel": 3,

@@ -1,8 +1,9 @@
 {
-    "rl":"per_dqn",
+    "rl":"per_dqn_icm",
     "replay_buffer": {
         "capacity": 8000,
-        "batch_size": 32
+        "batch_size": 32,
+        "memory_path":null
     },
     "action_dims": 21,
     "state_dims":13,
@@ -14,5 +15,7 @@
     "use_gpu":true,
     "use_intrinsic":false,
     "use_td_clip":false,
-    "net_config_path":"./config/q_net_v2_config.json"
+    "net_config_path":"config/rl_config/q_net_v2.json",
+    "pre_trained": null
+
 }

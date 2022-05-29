@@ -1,20 +1,20 @@
 {
-  "type": "q_net_v2",
-  "state_dim": 13,
+  "type": "q_net_v2a",
+  "state_dim": 53,
   "action_dim": 21,
 
   "feature": {
     "type": "ca1df",
-      "sensor_dim": 8,
+    "sensor_dim": 48,
     "conv_layers": [
       {
         "in_channel": 3,
-        "out_channel": 8,
+        "out_channel": 6,
         "downsample": 2
       },
       {
-        "in_channel": 8,
-        "out_channel": 16,
+        "in_channel": 6,
+        "out_channel": 8,
         "downsample": 2
       }
     ],
@@ -28,8 +28,8 @@
     },
 
     "fusion_layers":{
-      "in_channel":64,
-      "layers":[32],
+      "in_channel":128,
+      "layers":[64],
       "out_channel":32,
       "activation": "relu",
       "out_activation": "none"
