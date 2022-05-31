@@ -1,20 +1,25 @@
 
-from ..common.priority_relpay_buffer import ReplayBuffer
-from ..common.rl_interface import RLInterface
-from ..common.e_greedy import e_greedy
-from rl.common.icm import ICM
-from rl.model.q_net import QNet
 import copy
-from torch.autograd import Variable
-from torch.optim import Adam
-import torch.nn as nn
-from torch import FloatTensor,LongTensor
-import torch
-import numpy as np
-from rl.common.soft_update import soft_update
 import itertools
 import json
 import os
+
+import numpy as np
+import torch
+import torch.nn as nn
+from torch import FloatTensor, LongTensor
+from torch.autograd import Variable
+from torch.optim import Adam
+
+from rl.common.r_s_utils import Normalization
+from rl.common.icm import ICM
+from rl.common.soft_update import soft_update
+from rl.model.q_net import QNet
+from ..common.e_greedy import e_greedy
+from ..common.priority_relpay_buffer import ReplayBuffer
+from ..common.rl_interface import RLInterface
+
+
 class PER_DQN_ICM(RLInterface):
     def __init__(self,config) -> None:
         super().__init__()
@@ -49,10 +54,10 @@ class PER_DQN_ICM(RLInterface):
         self.loss_fn.to(self.device)
         self.learn_step = 0
 
-
+        self.norm = None
         # icm
         self.icm = None
-        
+
         self.net_config = json.load(open(config["net_config_path"]))
         
         self.target_net = QNet(self.net_config)

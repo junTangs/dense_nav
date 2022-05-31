@@ -83,6 +83,7 @@ class ReplayBuffer:
     beta = 0.4  # importance-sampling, from initial value increasing to 1
     beta_increment_per_sampling = 0.001
     abs_err_upper = 1.  # clipped abs error
+    v_b_epsilon = 0.5
 
     def __init__(self, config):
         self.config = config
@@ -104,10 +105,17 @@ class ReplayBuffer:
             min_prob = 0.00001
         for i in range(self.batch_size):
             a, b = pri_seg * i, pri_seg * (i + 1)
-            v = np.random.uniform(a, b)
+            v = b
+            cnt = 0
+            while abs(v-b) < self.v_b_epsilon:
+                v = np.random.uniform(a,b)
+                cnt += 1
+                if cnt >= 1000:
+                    raise ValueError("[RelayBuffer]: Sample Fatal Error")
+
             idx, p, data = self.data.get_leaf(v)
             prob = p / self.data.total_p
-            ISWeights[i, 0] = np.power(prob / (min_prob+1e-5), -self.beta)
+            ISWeights[i, 0] = np.power((prob+1e-10)/ (min_prob), -self.beta)
             b_idx[i] = idx
             mini_batch.append(data)
 
@@ -151,11 +159,11 @@ class ReplayBuffer:
 
 
 if __name__ == "__main__":
-    config = {"capacity": 8000, "batch_size": 256}
+    config = {"capacity": 8000, "batch_size": 256,"memory_path":None}
     replay_buffer = ReplayBuffer(config)
 
     for i in range(8000):
-        replay_buffer.store(np.array([1, 2, 3]), i, 2, np.array([4, 5, 6]), False)
+        replay_buffer.store(np.array([1, 2, 3]), 0, i, np.array([4, 5, 6]), False)
         
     sample = replay_buffer.sample()
     print(sample)

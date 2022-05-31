@@ -44,6 +44,6 @@
     "robot_config_path":"config/env_config/robot.json",
     "obstacle_config_path":"config/env_config/obstacle.json",
     "goal_config_path":"config/env_config/goal.json",
-    "human_config_path": "config/env_config/human.json"
+    "human_config_path": "config/env_config/human_40.json"
 
 }

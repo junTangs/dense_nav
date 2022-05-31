@@ -19,8 +19,6 @@ class CA1DFusionLSTM(FeatureExtractor):
             self.convs.add_module(f"base_block_{i}",BasicBlock1d(conf["in_channel"],conf["out_channel"],downsample=conf["downsample"]))
             self.atts.add_module(f"atten_{i}",ChannelAttention(att_conf))
 
-        self.fusion_mlp = MLP(self.config["fusion_layers"])
-
         self.sensor_lstm_config = self.config["sensor_lstm"]
         self.lstm1 = nn.GRU(input_size=self.sensor_lstm_config["input_size"],
                             hidden_size=self.sensor_lstm_config["hidden_size"],
@@ -55,24 +53,27 @@ class CA1DFusionLSTM(FeatureExtractor):
             for conv,attn in zip(self.convs,self.atts):
                 frame = conv(frame)
                 frame = attn(frame)
-                frames.append(frame.view(b,1,-1))
+            frames.append(frame.view(b,1,-1))
         x_s = torch.cat(frames,dim=1)
-
 
         # xs: b channel dim -> n b hidden_size
         _,h1_t = self.lstm1(x_s,h1)
         _,h2_t = self.lstm2(x_r,h2)
 
-        # b * hidden_size
-        x_s = h1_t[-1,:,:]
-        x_r = h2_t[-1,:,:]
-        x = self.fusion_mlp(torch.cat([x_s,x_r],dim=1))
+        h1_t = torch.permute(h1_t,(1,0,2))
+        h2_t = torch.permute(h2_t,(1,0,2))
 
+        # b * hidden_size*n
+        x_s = h1_t.contiguous().view(b,-1)
+        x_r = h2_t.contiguous().view(b,-1)
 
-        return x
+        # b*hidden_size*n*2
+
+        return torch.cat([x_s,x_r],dim=1)
 
     def preprocess(self,states):
         obsv_res = []
+
         state_res = []
 
         for item in states:

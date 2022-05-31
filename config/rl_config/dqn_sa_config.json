@@ -1,7 +1,7 @@
 {
     "rl":"per_dqn_icm",
     "replay_buffer": {
-        "capacity": 8000,
+        "capacity": 20000,
         "batch_size": 32,
         "memory_path":null
     },

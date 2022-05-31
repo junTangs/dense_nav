@@ -19,32 +19,23 @@
       }
     ],
 
-    "fusion_layers":{
-      "in_channel":64,
-      "layers":[32],
-      "out_channel":32,
-      "activation": "relu",
-      "out_activation": "none"
-    },
-
-
     "sensor_lstm": {
       "input_size": 16,
       "hidden_size": 32,
-      "num_layers": 3
+      "num_layers": 2
     },
 
         "state_lstm": {
       "input_size": 5,
-      "hidden_size": 32,
-      "num_layers": 3
+      "hidden_size": 8,
+      "num_layers": 2
     }
   },
   "v_a":{
     "type": "v1n",
 
     "encoder": {
-        "in_channel":32,
+        "in_channel":80,
         "layers":[64],
         "out_channel":32,
         "activation": "relu",
@@ -55,7 +46,7 @@
     "a_layer":
     {
         "in_channel":32,
-        "layers":[64,32],
+        "layers":[32],
         "out_channel":21,
         "activation": "relu",
         "out_activation": "none"
@@ -64,7 +55,7 @@
     "v_layer":
     {
         "in_channel":32,
-        "layers":[16,8],
+        "layers":[8],
         "out_channel":1,
         "activation": "relu",
         "out_activation": "none"

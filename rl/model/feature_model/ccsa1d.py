@@ -1,6 +1,6 @@
 
 from rl.model.feature_model.feature_extractor import FeatureExtractor
-from rl.common.deep_model import BasicBlock1d,ChannelAttention,SpacialAttention
+from rl.common.deep_model import BasicBlock1d,ChannelAttention,SpacialAttention2d
 from torch import FloatTensor
 from torch.autograd import Variable
 import torch.nn as nn
@@ -18,7 +18,7 @@ class CCSA1D(FeatureExtractor):
             att_conf = {"in_channel":conf["out_channel"],"r":2}
             self.convs.add_module(f"base_block_{i}",BasicBlock1d(conf["in_channel"],conf["out_channel"],downsample=conf["downsample"]))
             self.atts.add_module(f"atten_{i}",ChannelAttention(att_conf))
-            self.sa_atts.add_module(f"sa_atten_{i}",SpacialAttention(3))
+            self.sa_atts.add_module(f"sa_atten_{i}",SpacialAttention2d(3))
 
     def feature(self,*args,**kwargs):
         x = args[0]

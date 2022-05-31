@@ -8,7 +8,7 @@
     "v_min": -1.5,
     "omega_max": 1.5,
     "omega_min": -1.5,
-    "is_random": false,
+    "is_random": true,
     "image":"nav_sim/images/robot.png",
     "sensor":[
         {
@@ -55,10 +55,10 @@
             "type":"goal"
         },
         {"type": "human",
-        "r": 2,
-        "density_map": false,
+        "r": 1,
+        "density_map": true,
         "out_num": 8,
-        "map_width": 128,
-        "map_height": 128}
+        "map_width": 32,
+        "map_height": 32}
     ]
 }
