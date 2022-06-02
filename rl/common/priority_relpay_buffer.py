@@ -110,7 +110,7 @@ class ReplayBuffer:
             while abs(v-b) < self.v_b_epsilon:
                 v = np.random.uniform(a,b)
                 cnt += 1
-                if cnt >= 1000:
+                if cnt >= 10000:
                     raise ValueError("[RelayBuffer]: Sample Fatal Error")
 
             idx, p, data = self.data.get_leaf(v)

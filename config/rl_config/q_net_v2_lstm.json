@@ -10,12 +10,14 @@
       {
         "in_channel": 1,
         "out_channel": 4,
-        "downsample": 2
+        "downsample": 2,
+        "kernel": 7
       },
       {
         "in_channel": 4,
         "out_channel": 8,
-        "downsample": 2
+        "downsample": 2,
+        "kernel": 3
       }
     ],
 
@@ -27,7 +29,7 @@
 
         "state_lstm": {
       "input_size": 5,
-      "hidden_size": 8,
+      "hidden_size": 32,
       "num_layers": 2
     }
   },
@@ -35,9 +37,9 @@
     "type": "v1n",
 
     "encoder": {
-        "in_channel":80,
-        "layers":[64],
-        "out_channel":32,
+        "in_channel":128,
+        "layers":[128],
+        "out_channel":256,
         "activation": "relu",
         "out_activation": "none"
     },
@@ -45,8 +47,8 @@
 
     "a_layer":
     {
-        "in_channel":32,
-        "layers":[32],
+        "in_channel":256,
+        "layers":[128],
         "out_channel":21,
         "activation": "relu",
         "out_activation": "none"
@@ -54,8 +56,8 @@
 
     "v_layer":
     {
-        "in_channel":32,
-        "layers":[8],
+        "in_channel":256,
+        "layers":[128],
         "out_channel":1,
         "activation": "relu",
         "out_activation": "none"

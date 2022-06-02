@@ -19,7 +19,7 @@ parser.add_argument("--rl_config", type=str, default = r"config/rl_config/dqn_ls
 parser.add_argument("--save_dir", type=str,default="models",help="save dir")
 parser.add_argument("--log_dir", type=str,default="log",help="log dir")
 parser.add_argument("--episode",type= int,default=1e4,help="episode")
-parser.add_argument("--name",type=str,default = "v2_gru3_rgs_new_reward_no_icm",help="experiment name")
+parser.add_argument("--name",type=str,default = "v2_gru5_rgs_no_icm",help="experiment name")
 
 
 args = parser.parse_args()

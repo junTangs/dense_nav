@@ -16,6 +16,6 @@
     "use_intrinsic":false,
     "use_td_clip":false,
     "net_config_path":"config/rl_config/q_net_v2.json",
-    "pre_trained": "models/2022_05_30_16_37_v2_40_rgs/8500_ckpt_53"
+    "pre_trained": null
 
 }

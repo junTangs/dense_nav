@@ -16,8 +16,9 @@ class CA1DFusionLSTM(FeatureExtractor):
         self.atts = nn.ModuleList()
         for i,conf in enumerate(self.config["conv_layers"]):
             att_conf = {"in_channel":conf["out_channel"],"r":2}
-            self.convs.add_module(f"base_block_{i}",BasicBlock1d(conf["in_channel"],conf["out_channel"],downsample=conf["downsample"]))
+            self.convs.add_module(f"base_block_{i}",BasicBlock1d(conf["in_channel"],conf["out_channel"],downsample=conf["downsample"],kernel=conf["kernel"]))
             self.atts.add_module(f"atten_{i}",ChannelAttention(att_conf))
+
 
         self.sensor_lstm_config = self.config["sensor_lstm"]
         self.lstm1 = nn.GRU(input_size=self.sensor_lstm_config["input_size"],
@@ -68,7 +69,6 @@ class CA1DFusionLSTM(FeatureExtractor):
         x_r = h2_t.contiguous().view(b,-1)
 
         # b*hidden_size*n*2
-
         return torch.cat([x_s,x_r],dim=1)
 
     def preprocess(self,states):

@@ -15,11 +15,11 @@ import argparse
 
 parser = argparse.ArgumentParser(description="TrainNavAgent")
 parser.add_argument("--env_config", type=str,default=r"config/env_config/env_30h.json",help="env config file path")
-parser.add_argument("--rl_config", type=str, default = r"config/rl_config/dqn_sa_config.json",help="rl config file path")
+parser.add_argument("--rl_config", type=str, default = r"config/rl_config/dqn_lstm_config.json",help="rl config file path")
 parser.add_argument("--save_dir", type=str,default="models",help="save dir")
 parser.add_argument("--log_dir", type=str,default="log",help="log dir")
 parser.add_argument("--episode",type= int,default=1e4,help="episode")
-parser.add_argument("--name",type=str,default = "v2_sa2_30_rgs",help="experiment name")
+parser.add_argument("--name",type=str,default = "v2_gru5_30_rgs_icm",help="experiment name")
 
 
 args = parser.parse_args()

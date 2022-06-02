@@ -14,9 +14,9 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description="TrainNavAgent")
-parser.add_argument("--env_config", type=str,default=r"config/env_config/env_40h.json",help="env config file path")
+parser.add_argument("--env_config", type=str,default=r"config/env_config/env.json",help="env config file path")
 parser.add_argument("--rl_config", type=str, default = r"config/rl_config/dqn_lstm_config.json",help="rl config file path")
-parser.add_argument("--pre_trained",type = str,default=r"models/2022_05_31_09_16_v2_gru3_40_rgs_ex/2500_ckpt_55",help="pre trained")
+parser.add_argument("--pre_trained",type = str,default=r"models/2022_06_02_10_00_v2_gru5_rgs_icm/5000_ckpt_73",help="pre trained")
 parser.add_argument("--log_dir", type=str,default="log",help="log dir")
 parser.add_argument("--episode",type= int,default=1e4,help="episode")
 parser.add_argument("--name",type=str,default = "v2_gru_40_rgs_eval",help="experiment name")

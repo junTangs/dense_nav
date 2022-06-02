@@ -76,16 +76,16 @@ class BasicBlockV2(nn.Module):
 
 
 class BasicBlock1d(nn.Module):
-    def __init__(self,in_channel,out_channel,downsample = 1):
+    def __init__(self,in_channel,out_channel,downsample = 1,kernel = 3):
         super(BasicBlock1d, self).__init__()
-
+        padding = 1 if kernel == 3 else 3
         self.conv3x3 = nn.Sequential(
                 # nn.BatchNorm1d(in_channel),
                 nn.ReLU(),
-                nn.Conv1d(in_channel, out_channel, 3, padding=1, stride=downsample),
+                nn.Conv1d(in_channel, out_channel, kernel, padding=padding, stride=downsample),
                 # nn.BatchNorm1d(out_channel),
                 nn.ReLU(),
-                nn.Conv1d(out_channel, out_channel, 3,  padding=1, stride=1),
+                nn.Conv1d(out_channel, out_channel, kernel,  padding=padding, stride=1),
         )
 
         if in_channel != out_channel or downsample!=1:
