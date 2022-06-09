@@ -137,10 +137,11 @@ class PER_DQN_ICM(RLInterface):
             r = r + intrinsic_r.view(-1,1)
         
         
-        
+        q_s_ = self.eval_net(s_)
         
         # a' : [b,1]
-        a_  = torch.argmax(q_s,1).reshape(-1,1)
+        a_  = torch.argmax(q_s_,1).reshape(-1,1)
+
         # Q'(s',a') =Q'(s_,argmax_a(Q(s,a))) : [b,1]
         qt_s_a_ = self.target_net(s_).gather(1,a_)
         
