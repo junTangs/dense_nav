@@ -146,7 +146,8 @@ class PER_DQN_ICM(RLInterface):
         qt_s_a_ = self.target_net(s_).gather(1,a_)
         
         # y = r + self.gamma*qt_s_a_*(1-d)
-        y = r + self.gamma*qt_s_a_*(1-d)
+        # y = r + self.gamma*qt_s_a_*(1-d)
+        y = r + self.gamma*qt_s_a_
 
         # [b,1]
         td_errors = abs(y - q_s_a)
