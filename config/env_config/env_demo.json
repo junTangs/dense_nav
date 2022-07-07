@@ -10,8 +10,8 @@
     },
     "stack_frames":3,
     "seed":null,
-    "reward_fn": "sparse",
-    "state_wrapper": "rs_d_g",
+    "reward_fn": "apf",
+    "state_wrapper": "d_sensor",
     "action_map":{
 
          "0":[0,0],
