@@ -57,7 +57,8 @@
         {"type": "human",
         "r": 1,
         "density_map": true,
-        "out_num": 8,
+        "sort": false,
+        "out_num": 20,
         "map_width": 32,
         "map_height": 32}
     ]

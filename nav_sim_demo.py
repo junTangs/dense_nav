@@ -12,6 +12,7 @@ env.reset()
 
 for i in tqdm.trange(10000):
     s = env.step(0)
+    print(s)
     env.render()
 
 
