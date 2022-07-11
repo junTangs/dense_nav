@@ -4,10 +4,7 @@
     "y": 5,
     "r": 0.25,
     "theta": -135,
-    "v_max": 1.5,
-    "v_min": -1.5,
-    "omega_max": 1.5,
-    "omega_min": -1.5,
+    "v_pref": 1,
     "is_random": false,
     "image":"nav_sim/images/robot.png",
     "sensor":[
