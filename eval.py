@@ -1,5 +1,6 @@
 
 import nav_sim
+from nav_sim import NavEnvV2
 import gym
 import json
 from rl import QNet,rl_type
@@ -14,9 +15,9 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description="TrainNavAgent")
-parser.add_argument("--env_config", type=str,default=r"config/env_config/env_30h.json",help="env config file path")
+parser.add_argument("--env_config", type=str,default=r"config/env_config/env_test.json",help="env config file path")
 parser.add_argument("--rl_config", type=str, default = r"config/rl_config/dqn_lstm_config.json",help="rl config file path")
-parser.add_argument("--pre_trained",type = str,default=r"models/2022_06_03_12_05_v2_gru5_40_rgs_icm/2500_ckpt_66",help="pre trained")
+parser.add_argument("--pre_trained",type = str,default=r"models/2022_07_11_21_32_CNN_GRU/9500_ckpt_53",help="pre trained")
 parser.add_argument("--log_dir", type=str,default="log",help="log dir")
 parser.add_argument("--episode",type= int,default=1e4,help="episode")
 parser.add_argument("--name",type=str,default = "v2_gru_40_rgs_eval",help="experiment name")
@@ -49,7 +50,7 @@ rl_config["pre_trained"] = args.pre_trained
 # writer = SummaryWriter(log_dir=log_dir)
 
 # environment
-env = gym.make("nav_env-v0",config = config)
+env = NavEnvV2(config = config)
 
 # reinforcement learning
 rl = rl_type[rl_config["rl"]](rl_config)
@@ -70,7 +71,7 @@ for i_episode in range(EPISODE):
     while True:
         a = rl.choose_action(s)
 
-        s_,r,done,info  = env.step(a)
+        s_,r,done,info  = env.step(env.action_space[a])
         env.render()
 
         ep_r += r

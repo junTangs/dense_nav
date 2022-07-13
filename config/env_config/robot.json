@@ -3,7 +3,7 @@
     "x": 5,
     "y": 5,
     "r": 0.25,
-    "theta": -135,
+    "theta": 0,
     "v_pref": 1,
     "is_random": false,
     "image":"nav_sim/images/robot.png",
@@ -52,7 +52,7 @@
             "type":"goal"
         },
         {"type": "human",
-        "r": 1,
+        "r": 100,
         "density_map": true,
         "sort": false,
         "out_num": 20,

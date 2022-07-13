@@ -6,7 +6,7 @@
             "y":0,
             "r":0.2,
             "image":"nav_sim/images/goal.png",
-            "is_random": false
+            "is_random": true
         }
 
 

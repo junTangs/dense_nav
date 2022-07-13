@@ -2,20 +2,20 @@
     "rl":"per_dqn_icm",
     "replay_buffer": {
         "capacity": 20000,
-        "batch_size": 256,
+        "batch_size": 128,
         "memory_path":null
     },
-    "action_dims": 21,
-    "state_dims":13,
-    "feature_dims":128,
-    "e":0.1,
+    "action_dims": 64,
+    "state_dims":14,
+    "feature_dims":64,
+    "e":0.15,
     "lr":0.001,
     "gamma":0.95,
     "update_freq":250,
     "use_gpu":true,
-    "use_intrinsic":true,
+    "use_intrinsic":false,
     "use_td_clip":false,
     "net_config_path":"config/rl_config/q_net_v2_lstm.json",
-    "pre_trained": null
+    "pre_trained": "models/2022_07_13_11_38_CNN_GRU/3600_ckpt_58"
 
 }

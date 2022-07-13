@@ -1,0 +1,129 @@
+{
+
+    "humans":[
+         {
+            "x":5,
+            "y":7,
+            "theta": -56,
+            "v_pref": 0.3,
+            "r":0.25,
+            "image":"nav_sim/images/human.png",
+            "is_random": true,
+            "target": [5,7],
+            "safe_r": 0.1
+        },
+        {
+            "x":7,
+            "y":5,
+            "theta": -90,
+            "v_pref": 0.3,
+            "r":0.25,
+            "image":"nav_sim/images/human.png",
+            "is_random": true,
+            "target": [7,5],
+            "safe_r": 0.1
+        },
+               {
+            "x":5,
+            "y":7,
+            "theta": -56,
+            "v_pref": 0.3,
+            "r":0.25,
+            "image":"nav_sim/images/human.png",
+            "is_random": true,
+            "target": [5,7],
+            "safe_r": 0.1
+        },
+        {
+            "x":7,
+            "y":5,
+            "theta": -90,
+            "v_pref": 0.3,
+            "r":0.25,
+            "image":"nav_sim/images/human.png",
+            "is_random": true,
+            "target": [7,5],
+            "safe_r": 0.1
+        },
+               {
+            "x":5,
+            "y":7,
+            "theta": -56,
+            "v_pref": 0.3,
+            "r":0.25,
+            "image":"nav_sim/images/human.png",
+            "is_random": true,
+            "target": [5,7],
+            "safe_r": 0.1
+        },
+        {
+            "x":7,
+            "y":5,
+            "theta": -90,
+            "v_pref": 0.3,
+            "r":0.25,
+            "image":"nav_sim/images/human.png",
+            "is_random": true,
+            "target": [7,5],
+            "safe_r": 0.1
+        },
+               {
+            "x":5,
+            "y":7,
+            "theta": -56,
+            "v_pref": 0.3,
+            "r":0.25,
+            "image":"nav_sim/images/human.png",
+            "is_random": true,
+            "target": [5,7],
+            "safe_r": 0.1
+        },
+        {
+            "x":7,
+            "y":5,
+            "theta": -90,
+            "v_pref": 0.3,
+            "r":0.25,
+            "image":"nav_sim/images/human.png",
+            "is_random": true,
+            "target": [7,5],
+            "safe_r": 0.1
+        },
+               {
+            "x":5,
+            "y":7,
+            "theta": -56,
+            "v_pref": 0.3,
+            "r":0.25,
+            "image":"nav_sim/images/human.png",
+            "is_random": true,
+            "target": [5,7],
+            "safe_r": 0.1
+        },
+        {
+            "x":7,
+            "y":5,
+            "theta": -90,
+            "v_pref": 0.3,
+            "r":0.25,
+            "image":"nav_sim/images/human.png",
+            "is_random": true,
+            "target": [7,5],
+            "safe_r": 0.1
+        },
+        {
+            "x": 5,
+            "y": 7,
+            "theta": -56,
+            "v_pref": 0.3,
+            "r": 0.25,
+            "image": "nav_sim/images/human.png",
+            "is_random": true,
+            "target": [
+                5,
+                7
+            ],
+            "safe_r": 0.1
+        }
+    ]
+}

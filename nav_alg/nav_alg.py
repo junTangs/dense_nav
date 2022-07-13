@@ -1,7 +1,10 @@
 import math
 from abc import ABCMeta,abstractmethod
-from .state import JointState,FullState,ObservableState
-from .action import ActionRot,ActionXY
+from crowd_sim.envs.utils.state import JointState,FullState,ObservableState
+from crowd_sim.envs.utils.action import ActionRot,ActionXY
+from nav_sim.utils.action import ActionXY as AXY
+from nav_sim.utils.action import ActionVW as AVW
+
 import configparser
 from crowd_nav.policy.policy_factory import policy_factory
 import torch
@@ -12,22 +15,24 @@ class NavAlg(metaclass = ABCMeta):
 
         self.config = configparser.RawConfigParser()
         self.config.read(config_path)
-        self.policy = policy_factory[policy]
+        self.policy = policy_factory[policy]()
         self.device = None
 
 
-    def setup(self,weight):
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.policy.configure(self.config)
+    def setup(self,weight,time_step = 0.25,gpu = False):
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() and gpu else "cpu")
+        self.policy.configure(config = self.config)
+
         self.policy.set_device(self.device)
         self.policy.get_model().load_state_dict(torch.load(weight))
+        self.policy.set_phase("test")
+        self.policy.time_step = time_step
+
 
     
     def preprocess(self,state)->JointState:
-        vx = state[3]*math.cos(math.radians(state[5]))
-        vy = state[3]*math.sin(math.radians(state[5]))
-        v_pref = 1
-        rs = FullState(state[0],state[1],vx,vy,state[2],state[6],state[7],v_pref,math.radians(state[5]))
+
+        rs = FullState(state[0],state[1],state[4],state[5],state[2],state[9],state[10],state[8],math.radians(state[3])+math.pi)
 
         humans_states = state[8:]
         hs = []
@@ -43,8 +48,13 @@ class NavAlg(metaclass = ABCMeta):
 
 
     def predict(self,state):
-        action = self.policy.predict(self.preprocess(state))
-        return action['vx'],action['vy']
+        state = self.preprocess(state)
+        action = self.policy.predict(state)
+        if isinstance(action,ActionXY):
+            return AXY(action.vx,action.vy)
+        else:
+            return AVW(action.v,action.r)
+
 
 
     
