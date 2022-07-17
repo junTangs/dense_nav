@@ -1,6 +1,5 @@
 
-import nav_sim
-import gym
+from nav_sim import  NavEnvV2,NavEnvV1
 import json
 from rl import QNet,rl_type
 from colorama import Fore, Back, Style
@@ -14,12 +13,12 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description="TrainNavAgent")
-parser.add_argument("--env_config", type=str,default=r"config/env_config/env_pos.json",help="env config file path")
-parser.add_argument("--rl_config", type=str, default = r"config/rl_config/dqn_lstm_2d_config.json",help="rl config file path")
+parser.add_argument("--env_config", type=str,default=r"config/env_config/env.json",help="env config file path")
+parser.add_argument("--rl_config", type=str, default = r"config/rl_config/dqn_lstm_config.json",help="rl config file path")
 parser.add_argument("--save_dir", type=str,default="models",help="save dir")
 parser.add_argument("--log_dir", type=str,default="log",help="log dir")
 parser.add_argument("--episode",type= int,default=1e4,help="episode")
-parser.add_argument("--name",type=str,default = "v2d_gru_20_rgs",help="experiment name")
+parser.add_argument("--name",type=str,default = "CNN_GRU_NO_INTRIC",help="experiment name")
 
 
 args = parser.parse_args()
@@ -30,7 +29,7 @@ CONFIG_PATH = args.env_config
 RL_PATH = args.rl_config
 SAVE_DIR = args.save_dir
 LOG_DIR = args.log_dir
-EPISODE = int(args.episode)
+EPISODE = int(args.episode)+1
 
 colorama.init(autoreset=True)
 today =  datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_')
@@ -77,7 +76,7 @@ if not os.path.exists(log_dir):
 writer = SummaryWriter(log_dir=log_dir)
 
 # environment
-env = gym.make("nav_env-v0",config = config)
+env = NavEnvV1(config)
 
 # reinforcement learning
 rl = rl_type[rl_config["rl"]](rl_config)
@@ -101,7 +100,7 @@ for i_episode in range(EPISODE):
     ep_r = 0
     while True:
         a = rl.choose_action(s)
-        s_,r,done,info  = env.step(a)
+        s_,r,done,info  = env.step(env.action_space[a])
 
         rl.store(s,a,r,s_,done)
 

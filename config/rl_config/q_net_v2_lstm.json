@@ -1,7 +1,7 @@
 {
   "type": "q_net_v2_lstm",
-  "state_dim": 13,
-  "action_dim": 21,
+  "state_dim": 14,
+  "action_dim": 128,
 
   "feature": {
     "type": "ca1df_lstm",
@@ -24,20 +24,20 @@
     "sensor_lstm": {
       "input_size": 16,
       "hidden_size": 32,
-      "num_layers": 2
+      "num_layers": 1
     },
 
         "state_lstm": {
-      "input_size": 5,
+      "input_size": 6,
       "hidden_size": 32,
-      "num_layers": 2
+      "num_layers": 1
     }
   },
   "v_a":{
     "type": "v1n",
 
     "encoder": {
-        "in_channel":128,
+        "in_channel":64,
         "layers":[128],
         "out_channel":256,
         "activation": "relu",
@@ -49,7 +49,7 @@
     {
         "in_channel":256,
         "layers":[128],
-        "out_channel":21,
+        "out_channel":64,
         "activation": "relu",
         "out_activation": "none"
     },

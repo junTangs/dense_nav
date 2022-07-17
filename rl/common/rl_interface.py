@@ -30,4 +30,3 @@ class RLInterface(metaclass = ABCMeta):
     
     def load(self,model_dir):
         raise NotImplementedError
-    

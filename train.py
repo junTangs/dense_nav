@@ -1,6 +1,5 @@
 
-import nav_sim
-import gym
+from nav_sim import  NavEnvV1
 import json
 from rl import QNet,rl_type
 from colorama import Fore, Back, Style
@@ -15,11 +14,11 @@ import argparse
 
 parser = argparse.ArgumentParser(description="TrainNavAgent")
 parser.add_argument("--env_config", type=str,default=r"config/env_config/env.json",help="env config file path")
-parser.add_argument("--rl_config", type=str, default = r"config/rl_config/dqn_v2_config.json",help="rl config file path")
+parser.add_argument("--rl_config", type=str, default = r"config/rl_config/dqn_lstm_config.json",help="rl config file path")
 parser.add_argument("--save_dir", type=str,default="models",help="save dir")
 parser.add_argument("--log_dir", type=str,default="log",help="log dir")
 parser.add_argument("--episode",type= int,default=1e4,help="episode")
-parser.add_argument("--name",type=str,default = "v2_20_rgs",help="experiment name")
+parser.add_argument("--name",type=str,default = "CNN_GRU",help="experiment name")
 
 
 args = parser.parse_args()
@@ -77,17 +76,19 @@ if not os.path.exists(log_dir):
 writer = SummaryWriter(log_dir=log_dir)
 
 # environment
-env = gym.make("nav_env-v0",config = config)
+env = NavEnvV1(config)
 
 # reinforcement learning
 rl = rl_type[rl_config["rl"]](rl_config)
 
 
 reach_counter = 0
+best_reach_counter = 0
 for i_episode in range(EPISODE):
     s = env.reset()
 
-    if i_episode%500 == 0 and i_episode != 0:
+    if i_episode%100 == 0 and i_episode != 0 and reach_counter >= best_reach_counter:
+        best_reach_counter = reach_counter
         dir = os.path.join(save_dir,f"{i_episode}_ckpt_{reach_counter}")
         os.mkdir(dir)
         rl.save(dir)
@@ -101,7 +102,7 @@ for i_episode in range(EPISODE):
     ep_r = 0
     while True:
         a = rl.choose_action(s)
-        s_,r,done,info  = env.step(a)
+        s_,r,done,info  = env.step(env.action_space[a])
 
         rl.store(s,a,r,s_,done)
 
@@ -115,7 +116,7 @@ for i_episode in range(EPISODE):
         loss = rl.learn()
         writer.add_scalar("Train/loss", loss, i_episode)
 
-        if done or step_cnt >= 500:
+        if done or info["time"] >= 20:
             writer.add_scalar("Train/reward",ep_r,i_episode)
             writer.add_scalar("Train/steps",step_cnt,i_episode)
             writer.add_scalar("Train/average_reward",ep_r/step_cnt,i_episode)

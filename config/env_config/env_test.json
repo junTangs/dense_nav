@@ -1,24 +1,24 @@
 {
-    "dt": 0.25,
-    "width":10,
-    "length":10,
-    "is_render":false,
+    "dt": 0.1,
+    "width":20,
+    "length":20,
+    "is_render":true,
     "fps":30,
-    "speed_samples": 8,
-    "rotation_samples": 8,
+    "speed_samples": 16,
+    "rotation_samples": 5,
     "kinematics": "holonomic",
     "display_size":{
         "width":1000,
         "height":1000
     },
-    "action_dims": 64,
+    "action_dims": 80,
     "stack_frames":3,
     "seed":null,
     "reward_fn": "apf",
-    "state_wrapper": "d_sensor",
+    "state_wrapper": "joint",
     "robot_config_path":"config/env_config/robot.json",
     "obstacle_config_path":"config/env_config/obstacle.json",
     "goal_config_path":"config/env_config/goal.json",
-    "human_config_path": "config/env_config/human.json"
+    "human_config_path": "config/env_config/human_10.json"
 
 }
