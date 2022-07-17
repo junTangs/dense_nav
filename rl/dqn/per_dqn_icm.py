@@ -159,6 +159,10 @@ class PER_DQN_ICM(RLInterface):
         # backward
         self.optimizer.zero_grad()
         loss.backward()
+        # td clip
+        if self.config["use_td_clip"]:
+            for param in self.eval_net.prameters():
+                param.grad.data.clamp_(-1,1)
         self.optimizer.step()
         td_errors = td_errors.cpu().detach().numpy()
         self.memory.batch_update(batch_index,td_errors)
