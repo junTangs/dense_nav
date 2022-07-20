@@ -61,8 +61,9 @@ class CA1DFusionLSTM(FeatureExtractor):
         _,h1_t = self.lstm1(x_s,h1)
         _,h2_t = self.lstm2(x_r,h2)
 
-        h1_t = torch.permute(h1_t,(1,0,2))
-        h2_t = torch.permute(h2_t,(1,0,2))
+
+        h1_t = h1_t.permute(1,0,2)
+        h2_t = h2_t.permute(1,0,2)
 
         # b * hidden_size*n
         x_s = h1_t.contiguous().view(b,-1)
