@@ -19,6 +19,8 @@ from ..common.e_greedy import e_greedy
 from ..common.priority_relpay_buffer import ReplayBuffer
 from ..common.rl_interface import RLInterface
 
+import math
+
 
 class PER_DQN_ICM(RLInterface):
     def __init__(self,config) -> None:
@@ -35,9 +37,14 @@ class PER_DQN_ICM(RLInterface):
         self.loss_fn = nn.MSELoss()
         
         self.gamma = config["gamma"]
-        self.e = config["e"]
+        self.e = config["e_start"]
         self.update_freq = config["update_freq"]
         self.lr = config["lr"]
+
+        self.e_start = config["e_start"]
+        self.e_end = config["e_end"]
+        self.e_decay = config["e_decay"]
+        self.e_schedule = lambda step: self.e_end + (self.e_start - self.e_end) * math.exp(-1. * step * self.e_decay)
         
         
         # configure
@@ -82,7 +89,6 @@ class PER_DQN_ICM(RLInterface):
     
     def choose_action(self, state,**kwargs):
         q = self.eval_net([state])
-        
         a = e_greedy(self.e,q)
         return a
 
@@ -167,7 +173,7 @@ class PER_DQN_ICM(RLInterface):
         td_errors = td_errors.cpu().detach().numpy()
         self.memory.batch_update(batch_index,td_errors)
         self.learn_step += 1
-        
+        self.e = self.e_schedule(self.learn_step)
         return float(loss)
     
     def save(self, save_dir):
@@ -179,7 +185,6 @@ class PER_DQN_ICM(RLInterface):
     def load(self, model_dir):
         self.eval_net.load_state_dict(torch.load(model_dir+"/eval_net.pth"))
         self.target_net.load_state_dict(torch.load(model_dir+"/target_net.pth"))
-        
         if os.path.exists(model_dir+"/memory.pkl"):
             self.memory.load(model_dir+"/memory.pkl")
         return
@@ -193,7 +198,7 @@ class PER_DQN_ICM(RLInterface):
         return 
 
     def train(self):
-        self.e = self.config["e"]
+        self.e = self.e_schedule(self.learn_step)
         self.target_net.train()
         self.eval_net.train()
 
